@@ -9,7 +9,9 @@ app = FastAPI(
     description='Platform',
     version='1.0.0'
 )
-
+# запуск серввера python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
+# http://localhost:8000/docs
+# http://127.0.0.1:8000/docs
 
 # Модели данных в pydentic
 class UserBase(BaseModel):
