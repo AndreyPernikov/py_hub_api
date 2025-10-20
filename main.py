@@ -5,7 +5,7 @@ from datetime import datetime
 
 # создан экземпляр класса
 app = FastAPI(
-    title='hub_api',
+    title='py_hub_api',
     description='Platform',
     version='1.0.0'
 )
