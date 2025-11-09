@@ -4,6 +4,8 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+fake_items_db = [{"item_name": "Foo"}, {"item_name": "bar"}, {"item_name": "Baz"}]
+
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
@@ -45,3 +47,15 @@ async def get_model(model_name: ModelName):
 async def read_file(file_path: str):
     return {"file_path": file_path}
 
+
+@app.get("/items/")
+async def read_item(skip: int = 0, limit: int = 10):
+    return fake_items_db[skip: skip + limit]
+
+
+# path and query params
+@app.get("/q/items/{item_id}")
+async def read_item_id(item_id: str, q: str | None = None):
+    if q:
+        return {"item_id": item_id, "q": q}
+    return {"item_id": item_id}
