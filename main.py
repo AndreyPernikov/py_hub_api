@@ -1,6 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
+from typing import Annotated
 
 app = FastAPI()
 
@@ -110,3 +111,37 @@ async def i_update_item(item_id: int, item: Item, q: str | None = None):
     if q:
         result.update({"q": q})
     return result
+
+
+@app.get("/i/items")
+async def read_items_i(q: Annotated[str | None, Query(min_length=1, max_length=50)] = "fixedquery"):
+    result = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        result.update({"q": q})
+    return result
+
+
+@app.get("/i2/items")
+async def read_items_i2(q: Annotated[str, Query(min_length=1, max_length=50)]):
+    result = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        result.update({"q": q})
+    return result
+
+
+@app.get("/i3/items")
+async def read_items_i3(q: Annotated[list[str] | None, Query()] = None):
+    query_item = {"q": q}
+    return query_item
+
+
+@app.get("/i4/items")
+async def read_items_i4(q: Annotated[list[str] | None, Query()] = ["foo", "bar"]):
+    query_item = {"q": q}
+    return query_item
+
+
+@app.get("/i5/items")
+async def read_items_i5(q: Annotated[list, Query()] = []):
+    query_item = {"q": q}
+    return query_item
