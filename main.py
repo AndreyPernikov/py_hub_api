@@ -1,5 +1,5 @@
 from enum import Enum
-
+from pydantic import BaseModel
 from fastapi import FastAPI
 
 app = FastAPI()
@@ -11,6 +11,13 @@ class ModelName(str, Enum):
     alexnet = "alexnet"
     renet = "renet"
     lenet = "lenet"
+
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
 
 
 @app.get("/")
@@ -81,3 +88,25 @@ async def read_item_needy(item_id: int, needy: str):
 async def read_item_it(item_id: str, needy: str | None = None, skip: int = 0, limit: int | None = None):
     item = ({"item_id": item_id, "needy": needy, "skip": skip, "limit": limit})
     return item
+
+
+@app.post("/item/")
+async def create_item(item_id: int, item: Item):
+    item_dict = item.model_dump()
+    if item.tax is not None:
+        price_with_tax = item.tax + item.price
+        item_dict.update({"price_with_tax": price_with_tax})
+    return item_id, item_dict
+
+
+@app.put("/item/{item_id}")
+async def update_item(item_id: int, item: Item):
+    return {"item_id": item_id, **item.model_dump()}
+
+
+@app.put("/i/item/{item_id}")
+async def i_update_item(item_id: int, item: Item, q: str | None = None):
+    result = {"item_id": item_id, **item.model_dump()}
+    if q:
+        result.update({"q": q})
+    return result
