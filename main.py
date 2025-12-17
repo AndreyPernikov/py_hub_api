@@ -113,6 +113,8 @@ async def i_update_item(item_id: int, item: Item, q: str | None = None):
     return result
 
 
+# Query-параметры и валидация строк
+
 @app.get("/i/items")
 async def read_items_i(q: Annotated[str | None, Query(min_length=1, max_length=50)] = "fixedquery"):
     result = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
@@ -142,6 +144,15 @@ async def read_items_i4(q: Annotated[list[str] | None, Query()] = ["foo", "bar"]
 
 
 @app.get("/i5/items")
-async def read_items_i5(q: Annotated[list, Query()] = []):
+async def read_items_i5(q: Annotated[list, Query()] = []):  # Просто list
     query_item = {"q": q}
     return query_item
+
+
+@app.get("/i6/items")
+async def read_items_i6(q: Annotated[str | None, Query(title="Query string", min_length=3)] = None, ):
+    result = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
+    if q:
+        result.update({"q": q})
+
+    return result
